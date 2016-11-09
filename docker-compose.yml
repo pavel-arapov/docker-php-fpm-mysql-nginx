@@ -1,0 +1,34 @@
+version: "2"
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/src
+      - ./docker/nginx/site.conf:/etc/nginx/conf.d/site.conf
+    networks:
+      - code-network
+  php:
+    build: ./docker/php
+    volumes:
+      - ./src:/src
+    networks:
+      - code-network
+  db:
+    image: mysql:5.7
+    ports:
+        - "3307:3306"
+    volumes:
+      - "./.data/db:/var/lib/mysql"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: base
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    networks:
+      - code-network
+networks:
+  code-network:
+      driver: bridge
